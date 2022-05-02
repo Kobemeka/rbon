@@ -1,0 +1,18 @@
+Str string = "selam"
+
+Paragraph p = (){
+    show[string]
+}
+
+Document document = (
+    size: "a4",
+    width: 400
+)
+{
+    show[string]
+    "merhaba" + show[string] + " " + show[string]
+    show[p]
+}
+
+
+show[document]
