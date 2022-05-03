@@ -1,6 +1,6 @@
 Str string = "selam"
 
-Paragraph p = (){
+Paragraph p = (color: "red"){
     string[] + string[]
 }
 
@@ -8,23 +8,23 @@ Function f = (
     this.a,
     this.b
 ){
-    return[this.a["rbon" + "merhaba"], this.b[]]
+    return[this.b.color[]]
 }
 
-Equation eq = (no: "1"){
+Equation eq = (no: "1",number:1px,x:True){
     "x^2_i"
 }
 
 Document document = (
     size: "a4",
     width: 400 px,
-    heigth: 200 px,
+    height: 200 px,
+    test: p,
 )
 {
-    p[]
+    #p[]
     eq[]
-    f[p]
-    
+    f[p.color,eq.no,eq.number]
 }
 
 document[]

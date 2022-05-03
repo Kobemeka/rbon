@@ -70,16 +70,18 @@ def p_object(p):
     p[0] = emptydict
 
 def p_objectvalue(p):
+    # TODO: string or STRING
     ''' objectvalue : NUMBER unit
-                    | STRING
+                    | string
                     | NUMBER
                     | boolean
+                    | ids
     '''
     lp = len(p)
     if lp == 2:
-        p[0] = str(p[1]).replace('\"','')
+        p[0] = p[1]
     elif lp == 3:
-        p[0] = p[1] + p[2]
+        p[0] = '\"' + p[1] + p[2] + '\"'
 
 def p_unit(p):
     '''unit : PT
@@ -92,28 +94,36 @@ def p_boolean(p):
     ''' boolean : TRUE
                 | FALSE
     '''
-    p[0] = p[1]
+    p[0] = bool(p[1])
 
 def p_empty(p):
     'empty : '
     pass
 
-def p_show(p): # FIXME: name
-    ''' show : ids LBRACKET funcobject RBRACKET
+def p_getarg(p):
+    '''getarg : ids DOT ids'''
+    if p[1] in variables:
+        # print(variables[p[1]]["args"])
+        p[0] = variables[p[1]]["args"][p[3]]
+    else:
+        p[0] = p[1] + p[2] + p[3]
+    # p[0] = {"type":"getarg","object":p[1],"get":p[3]}
+
+def p_show_ids(p): # FIXME: name
+    ''' show : showobjs LBRACKET funcobject RBRACKET
     '''
-    lp = len(p)
-    if lp == 2:
-        if p[1] in variables:
-            p[0] = {"type": "show", "name": p[1], "args":None, "shows": variables[p[1]]}
-        else:
-            p[0] = {"type": "show", "name": p[1], "args":None, "shows": p[1]}
 
-    elif lp == 5:
-        if p[1] in variables:
-            p[0] = {"type": "show", "name": p[1], "args":p[3], "shows": variables[p[1]]}
-        else:
-            p[0] = {"type": "show", "name": p[1], "args":p[3], "shows": p[1]}
+    if p[1] in variables:
+        p[0] = {"type": "show", "name": p[1], "args":p[3], "shows": variables[p[1]]}
+    else:
+        p[0] = {"type": "show", "name": p[1], "args":p[3], "shows": p[1]}
 
+
+def p_showobjs(p):
+    '''showobjs : ids
+                | getarg
+    '''
+    p[0] = p[1]
 def p_multipleshows(p):
     '''multipleshows : show
                     | show COMMA multipleshows
@@ -182,6 +192,8 @@ def p_docreturn(p):
                 | returnableelements docreturn
                 | show
                 | show docreturn
+                | getarg
+                | getarg docreturn
                 | empty
     '''
 
@@ -222,7 +234,10 @@ def p_funcobject(p):
                     | string COMMA funcobject
                     | element
                     | element COMMA funcobject
-                    | ID
+                    | ids 
+                    | ids COMMA funcobject
+                    | getarg
+                    | getarg COMMA funcobject
                     | empty
     '''
     lp = len(p)
@@ -268,7 +283,7 @@ def p_string(p):
 def p_varstring(p):
     ''' varstring : STR elementname EQUAL STRING 
     '''
-    variables[p[2]] = {"type": "string", "name": p[2], "string": str(p[4]).replace('\"','')}
+    variables[p[2]] = {"type": "string", "name": p[2], "string": p[4]}
 
 parser = yacc.yacc()
 
