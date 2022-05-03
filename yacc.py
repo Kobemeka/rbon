@@ -12,6 +12,10 @@ pp = pprint.PrettyPrinter(indent=2)
 start = "elements"
 variables = {}
 
+def find_column(input, token):
+    line_start = input.rfind('\n', 0, token.lexpos) + 1
+    return (token.lexpos - line_start) + 1
+
 def p_elementname(p):
     '''elementname : ID
                    | UNDERSCORE
@@ -30,7 +34,7 @@ def p_funcargs(p):
     '''
     p[0] = p[1]
 
-def p_objects(p):  # TODO: change naming
+def p_objects(p):  # FIXME: change naming
     ''' objects : object COMMA objects
                 | object COMMA
                 | object
@@ -94,21 +98,44 @@ def p_empty(p):
     'empty : '
     pass
 
-def p_show(p):
-    ''' show : SHOW LBRACKET ids RBRACKET
+def p_show(p): # FIXME: name
+    ''' show : ids LBRACKET funcobject RBRACKET
     '''
-    if p[3] in variables:
-        p[0] = {"type": p[1], "name": p[3], "shows": variables[p[3]]}
-    else:
-        p[0] = {"type": p[1], "name": p[3], "shows": p[3]}
+    lp = len(p)
+    if lp == 2:
+        if p[1] in variables:
+            p[0] = {"type": "show", "name": p[1], "args":None, "shows": variables[p[1]]}
+        else:
+            p[0] = {"type": "show", "name": p[1], "args":None, "shows": p[1]}
+
+    elif lp == 5:
+        if p[1] in variables:
+            p[0] = {"type": "show", "name": p[1], "args":p[3], "shows": variables[p[1]]}
+        else:
+            p[0] = {"type": "show", "name": p[1], "args":p[3], "shows": p[1]}
+
+def p_multipleshows(p):
+    '''multipleshows : show
+                    | show COMMA multipleshows
+    '''
+    lp = len(p)
+    if lp == 2:
+        p[0] = [p[1]]
+    elif lp == 4:
+        p[0] = [p[1]] + p[3]
+
 
 def p_ids(p):
     '''ids : ID
             | thisobj
     '''
+
     p[0] = p[1]
+
 def p_error(p):
-    print(f"Syntax error in input! {p}")
+    print(f"Illegal Token '{p.value}' at Line {p.lineno} Col {find_column(p.lexer.lexdata,p)}")
+    quit()
+    
 
 def p_elements(p):
     ''' elements : element
@@ -138,7 +165,6 @@ def p_element(p):
 
 def p_returnableelements(p):
     ''' returnableelements : paragraph
-                            | call
     '''
     p[0] = p[1]
 
@@ -204,32 +230,14 @@ def p_funcobject(p):
         p[0] = [p[1]]
     elif lp == 4:
         p[0] = [p[1]] + p[3]
-    # emptydict = {}
 
-    # emptydict[p[3]] = p[1] + p[2] + p[3]
-    # p[0] = emptydict
 
 def p_funcreturn(p):
-    # TODO: FIX RETURN
-    '''funcreturn : RETURN show
-                    | RETURN show funcreturn
-                    | RETURN thisobj
-                    | RETURN thisobj funcreturn
-                    | RETURN call
-                    | RETURN call funcreturn
+    '''funcreturn : RETURN LBRACKET multipleshows RBRACKET
+                    | RETURN LBRACKET string RBRACKET
     '''
-    lp = len(p)
 
-    if lp == 3:
-        p[0] = [p[2]]
-    elif lp == 4:
-        p[0] = [p[2]] + p[3]
-
-def p_call(p):
-    '''call : CALL LBRACKET ids RBRACKET LBRACKET funcobject RBRACKET
-    '''
-    p[0] = {"type": p[1], "name": p[3], "args": p[6]}
-    # variables[p[3]] = {"func-name": p[3],"call-args":p[6]}
+    p[0] = p[3]
 
 def p_thisobj(p):
     '''thisobj : THIS DOT ID
@@ -237,23 +245,30 @@ def p_thisobj(p):
     p[0] = p[1] + p[2] + p[3]
 
 def p_string(p):
-    # TODO: try except
-    # FIXME: concat string and other types i.e string + paragraph
     '''string : STRING
                 | STRING PLUS string
                 | show
                 | show PLUS string
     '''
     if len(p) == 4:
-        p[0] = str(p[1]).replace('\"','') + p[3]
-    elif len(p) == 2:
-        p[0] = str(p[1]).replace('\"','')
+        pr = {
+            "type": "string-concat",
+            "concat":[
+                p[1],
+                p[3]
+            ]
+        }
 
+    elif len(p) == 2:
+        
+        pr = p[1]
+    
+    p[0] = pr
 
 def p_varstring(p):
     ''' varstring : STR elementname EQUAL STRING 
     '''
-    variables[p[2]] = str(p[4]).replace('\"','')
+    variables[p[2]] = {"type": "string", "name": p[2], "string": str(p[4]).replace('\"','')}
 
 parser = yacc.yacc()
 

@@ -1,16 +1,14 @@
 Str string = "selam"
 
 Paragraph p = (){
-    show[string]
+    string[] + string[]
 }
 
 Function f = (
     this.a,
     this.b
 ){
-    Return show[this.a]
-    Return call[this.a]["rbon"]
-    Return this.b
+    return[this.a["rbon" + "merhaba"], this.b[]]
 }
 
 Equation eq = (no: "1"){
@@ -19,14 +17,14 @@ Equation eq = (no: "1"){
 
 Document document = (
     size: "a4",
-    width: 400
+    width: 400 px,
+    heigth: 200 px,
 )
 {
-    show[p]
-    show[eq]
-    call[f][p]
-    show[f]
+    p[]
+    eq[]
+    f[p]
+    
 }
 
-
-show[document]
+document[]

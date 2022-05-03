@@ -1,4 +1,3 @@
-# TODO: Count equations
 
 reserved = {
     # VAR
@@ -36,7 +35,7 @@ reserved = {
     'False': 'FALSE',
 
     # FUNCTION
-    'Return': 'RETURN',
+    'return': 'RETURN',
 
     # Special Functions
 
@@ -113,7 +112,7 @@ t_FUNCTION = r'Function'
 t_TRUE = r'True'
 t_FALSE = r'False'
 
-t_RETURN = r'Return'
+t_RETURN = r'return'
 
 # t_TOSTRING = r'ToString'
 # t_SUP = r'Sup'
@@ -153,7 +152,7 @@ def t_ID(t):
 
 def t_NUMBER(t):
     r'\d+'
-    t.value = int(t.value)
+    t.value = str(t.value) # FIXME: return as int or str?
     return t
 
 
@@ -172,7 +171,6 @@ def t_newline(t):
     t.lexer.lineno += len(t.value)
 
 def find_column(input, token):
-    # TODO: find column number
     line_start = input.rfind('\n', 0, token.lexpos) + 1
     return (token.lexpos - line_start) + 1
 
@@ -183,6 +181,5 @@ def t_COMMENT(t):
 t_ignore = ' \t'
 
 def t_error(t):
-    print(f"Illegal Character {t.value[0]} at position {t.lexpos} and at line {t.lineno}")
-    # print("Illegal character '%s'" % t.value[0])
+    print(f"Illegal Character '{t.value[0]}' at Line {t.lineno} Col {find_column(t.lexer.lexdata,t)} ")
     t.lexer.skip(1)
