@@ -5,6 +5,7 @@ reserved = {
 
     'var' : 'VAR',
     'show' : 'SHOW',
+    'call' : 'CALL',
 
     # OPTIONS
 
@@ -46,7 +47,7 @@ reserved = {
 
     # Keywords
 
-    # 'this': 'THIS',
+    'this': 'THIS',
 }
 
 tokens = list(reserved.values()) + [
@@ -73,7 +74,7 @@ tokens = list(reserved.values()) + [
     'LBRACKET',
 
     ## 
-    # 'DOT',
+    'DOT',
     'COMMA',
     'COLON',
     # 'SEMICOLON',
@@ -90,6 +91,7 @@ tokens = list(reserved.values()) + [
 
 t_VAR = r'var'
 t_SHOW = r'show'
+t_CALL = r'call'
 
 t_PT = r'pt'
 t_PX = r'px'
@@ -117,7 +119,7 @@ t_RETURN = r'Return'
 # t_SUP = r'Sup'
 # t_SUB = r'Sub'
 
-# t_THIS = r'this'
+t_THIS = r'this'
 
 t_STR = r'Str'
 
@@ -137,7 +139,7 @@ t_RCURLY = r'\}'
 t_LBRACKET = r'\['
 t_RBRACKET = r'\]'
 
-# t_DOT = r'\.'
+t_DOT = r'\.'
 t_COMMA = r'\,'
 t_COLON = r'\:'
 # t_SEMICOLON = r'\;'

@@ -5,7 +5,7 @@ lexer = lex.lex(module=tokenrules)
 
 if __name__ == "__main__":
     
-    with open("test.rbon","r") as f:
+    with open("./example/example.rbon","r") as f:
         data = f.read()
 
     lexer.input(data)

@@ -4,14 +4,28 @@ Paragraph p = (){
     show[string]
 }
 
+Function f = (
+    this.a,
+    this.b
+){
+    Return show[this.a]
+    Return call[this.a]["rbon"]
+    Return this.b
+}
+
+Equation eq = (no: "1"){
+    "x^2_i"
+}
+
 Document document = (
     size: "a4",
     width: 400
 )
 {
-    show[string]
-    "merhaba" + show[string] + " " + show[string]
     show[p]
+    show[eq]
+    call[f][p]
+    show[f]
 }
 
 
